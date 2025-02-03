@@ -31,8 +31,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.gems.chatty.R
-import com.gems.chatty.ui.ContactData
-import com.gems.chatty.ui.MessageData
+import com.gems.chatty.ui.data.ContactData
+import com.gems.chatty.ui.data.MessageData
 import com.google.firebase.database.*
 import java.text.SimpleDateFormat
 import java.util.Date

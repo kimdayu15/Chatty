@@ -1,7 +1,6 @@
 package com.gems.chatty.ui.screens
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -35,7 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.gems.chatty.R
-import com.gems.chatty.ui.ContactData
+import com.gems.chatty.ui.data.ContactData
 import com.gems.chatty.ui.theme.ChattyTheme
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions

@@ -40,7 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.gems.chatty.ui.ContactData
+import com.gems.chatty.ui.data.ContactData
 import com.gems.chatty.ui.theme.ChattyTheme
 import com.gems.chatty.R
 import com.google.firebase.database.DataSnapshot
@@ -70,7 +70,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
-import com.gems.chatty.ui.MessageData
+import com.gems.chatty.ui.data.MessageData
 import kotlinx.coroutines.launch
 
 

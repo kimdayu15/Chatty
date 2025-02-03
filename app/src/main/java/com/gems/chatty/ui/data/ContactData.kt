@@ -1,4 +1,4 @@
-package com.gems.chatty.ui
+package com.gems.chatty.ui.data
 
 data class ContactData(
     val displayName: String? = null,

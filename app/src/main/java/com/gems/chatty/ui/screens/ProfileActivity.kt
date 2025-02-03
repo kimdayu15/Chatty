@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -26,7 +25,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import com.gems.chatty.ui.screens.ContactsActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.database.FirebaseDatabase
@@ -46,11 +44,9 @@ class ProfileActivity : ComponentActivity() {
 fun ProfileScreen() {
     val auth = FirebaseAuth.getInstance()
     val currentUser = auth.currentUser
-    var currentUsername = remember { mutableStateOf(currentUser?.displayName ?: "") }
     var newUsername = remember { mutableStateOf("") }
-    var isUpdating = remember { mutableStateOf(false) }
 
-    val context = LocalContext.current // Get the current context
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -61,16 +57,12 @@ fun ProfileScreen() {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Username Text Field
         Text("New Username:")
         BasicTextField(
             value = newUsername.value,
             onValueChange = { newUsername.value = it },
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = { /* Dismiss keyboard */ }
             ),
             modifier = Modifier
                 .fillMaxWidth()
@@ -90,16 +82,13 @@ fun ProfileScreen() {
                         newUsername.value.toString()
                     ) { success ->
                         if (success) {
-                            // Show success message
                             Toast.makeText(context, "Username updated!", Toast.LENGTH_SHORT).show()
 
-                            // Start ContactsActivity and close ProfileActivity
                             val intent = Intent(context, ContactsActivity::class.java).apply {
                                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                             }
                             context.startActivity(intent)
                         } else {
-                            // Show failure message
                             Toast.makeText(context, "Failed to update username.", Toast.LENGTH_SHORT).show()
                         }
                     }
@@ -117,7 +106,7 @@ fun updateUsername(userId: String, newUsername: String, callback: (Boolean) -> U
     val database = FirebaseDatabase.getInstance().reference
     val userRef = database.child("users").child(userId)
 
-    // Update username in Firebase Realtime Database
+
     userRef.child("displayName").setValue(newUsername)
         .addOnCompleteListener { task ->
             if (task.isSuccessful) {
