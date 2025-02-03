@@ -9,6 +9,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -67,29 +68,24 @@ fun ChatScreen(senderUid: String?, receiverUid: String?) {
         }
     }
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        bottomBar = {
-            MessageInputBar(
-                messageText = messageText,
-                onMessageTextChanged = { messageText.value = it },
-                onSendMessage = {
-                    if (messageText.value.isNotBlank()) {
-                        sendMessageToFirebase(senderUid, receiverUid, messageText.value)
-                        messageText.value = ""
-                    }
-                },
-                onToggleEmojiKeyboard = {
-                    showEmojiKeyboard.value = !showEmojiKeyboard.value
-                    if (showEmojiKeyboard.value) {
-                        keyboardController?.hide()
-                    } else {
-                        keyboardController?.show()
-                    }
+    Scaffold(modifier = Modifier.fillMaxSize(), bottomBar = {
+        MessageInputBar(messageText = messageText,
+            onMessageTextChanged = { messageText.value = it },
+            onSendMessage = {
+                if (messageText.value.isNotBlank()) {
+                    sendMessageToFirebase(senderUid, receiverUid, messageText.value)
+                    messageText.value = ""
                 }
-            )
-        }
-    ) { innerPadding ->
+            },
+            onToggleEmojiKeyboard = {
+                showEmojiKeyboard.value = !showEmojiKeyboard.value
+                if (showEmojiKeyboard.value) {
+                    keyboardController?.hide()
+                } else {
+                    keyboardController?.show()
+                }
+            })
+    }) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -164,9 +160,7 @@ fun MessageInputBar(
 
         IconButton(onClick = onSendMessage) {
             Icon(
-                imageVector = Icons.Default.Send,
-                contentDescription = "Send",
-                tint = Color.Blue
+                imageVector = Icons.Default.Send, contentDescription = "Send", tint = Color.Blue
             )
         }
     }
@@ -215,8 +209,7 @@ fun ContactHeader(contact: ContactData) {
 @Composable
 fun MessageDateHeader(date: String) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center
+        modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center
     ) {
         Text(
             text = date,
@@ -237,18 +230,15 @@ fun EmojiKeyboard(onEmojiSelected: (String) -> Unit) {
             .padding(8.dp)
     ) {
         Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.fillMaxWidth()
+            horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()
         ) {
             val emojis = listOf("😊", "😂", "😍", "😎", "🥳", "😢", "😜", "😇")
             emojis.forEach { emoji ->
-                Text(
-                    text = emoji,
+                Text(text = emoji,
                     fontSize = 19.sp,
                     modifier = Modifier
                         .size(40.dp)
-                        .clickable { onEmojiSelected(emoji) }
-                )
+                        .clickable { onEmojiSelected(emoji) })
             }
         }
     }
@@ -276,14 +266,26 @@ fun MessageBubble(messageText: String?, isSender: Boolean, timestamp: String?) {
                     color = if (isSender) Color.White else Color.Black
                 )
             }
-            Text(timestamp ?: "-", color = Color.Gray)
+            Row(
+                modifier = Modifier.widthIn(min = 50.dp, max = 250.dp),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(timestamp ?: "-", color = Color.Gray)
+                Icon(
+                    painter = painterResource(R.drawable.round_check_24),
+                    contentDescription = null,
+                    modifier = Modifier.size(17.dp),
+                    tint = Color.Gray
+                )
+            }
+
         }
     }
 }
 
 fun groupMessagesByDate(
-    messages: List<MessageData>,
-    groupedMessages: MutableList<Pair<String, List<MessageData>>>
+    messages: List<MessageData>, groupedMessages: MutableList<Pair<String, List<MessageData>>>
 ) {
     val grouped = messages.groupBy { formatDate(it.timestamp ?: System.currentTimeMillis()) }
     groupedMessages.clear()
@@ -317,15 +319,13 @@ fun fetchUsersFromFirebase(receiverUid: String, callback: (ContactData) -> Unit)
 }
 
 fun fetchMessagesFromFirebase(
-    senderUid: String,
-    receiverUid: String,
-    callback: (List<MessageData>) -> Unit
+    senderUid: String, receiverUid: String, callback: (List<MessageData>) -> Unit
 ) {
     val database = FirebaseDatabase.getInstance().reference
-    val chatId = if (senderUid < receiverUid) "$senderUid $receiverUid" else "$receiverUid $senderUid"
+    val chatId =
+        if (senderUid < receiverUid) "$senderUid $receiverUid" else "$receiverUid $senderUid"
 
-    database.child("chats").child(chatId).child("messages")
-        .orderByChild("timestamp")
+    database.child("chats").child(chatId).child("messages").orderByChild("timestamp")
         .addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val messageList = mutableListOf<MessageData>()
@@ -348,10 +348,7 @@ fun fetchMessagesFromFirebase(
 
 fun markMessageAsRead(messageId: String) {
     val database = FirebaseDatabase.getInstance().reference
-    database.child("chats")
-        .child(messageId)
-        .child("messages")
-        .child(messageId)
+    database.child("chats").child(messageId).child("messages").child(messageId)
         .updateChildren(mapOf("isRead" to true))
 }
 
@@ -359,7 +356,8 @@ fun sendMessageToFirebase(senderUid: String?, receiverUid: String?, message: Str
     if (senderUid == null || receiverUid == null || message.isEmpty()) return
 
     val database = FirebaseDatabase.getInstance().reference
-    val chatId = if (senderUid < receiverUid) "$senderUid $receiverUid" else "$receiverUid $senderUid"
+    val chatId =
+        if (senderUid < receiverUid) "$senderUid $receiverUid" else "$receiverUid $senderUid"
     val messageId = database.child("chats").child(chatId).child("messages").push().key ?: return
 
     val messageData = MessageData(
