@@ -49,13 +49,10 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.HorizontalDivider
@@ -70,7 +67,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
@@ -227,7 +223,7 @@ class ContactsActivity() : ComponentActivity() {
                                 actions = {
                                     IconButton(onClick = {
                                         if (isSearching.value) {
-                                            searchQuery.value = ""  // Clear search
+                                            searchQuery.value = ""
                                             isSearching.value = false
                                         } else {
                                             isSearching.value = true
@@ -285,7 +281,6 @@ class ContactsActivity() : ComponentActivity() {
                                             if (contact.uid != uid) {
                                                 val lastMessage = remember { mutableStateOf<String?>(null) }
 
-                                                // Fetch the last message for each contact
                                                 LaunchedEffect(contact.uid) {
                                                     fetchLastMessage(uid.toString(),
                                                         contact.uid.toString()
@@ -294,7 +289,6 @@ class ContactsActivity() : ComponentActivity() {
                                                     }
                                                 }
 
-                                                // Limit the last message to 50 characters
                                                 val displayMessage = lastMessage.value?.let {
                                                     if (it.length > 30) {
                                                         "${it.take(30)}..."
